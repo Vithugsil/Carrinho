@@ -20,6 +20,11 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.loja),
-    path('carrinho/', views.carrinho)
+    path('', views.loja, name='loja'),
+    path('carrinho/', views.carrinho, name='carrinho'),
+    path('adicionar-carrinho/', views.adicionar_carrinho, name='adicionar_carrinho'),
+    path('aumentar-quantidade/', views.aumentar_quantidade, name='aumentar_quantidade'),
+    path('diminuir-quantidade/', views.diminuir_quantidade, name='diminuir_quantidade'),
+    path('remover-item/', views.remover_item, name='remover_item'),
+    path('finalizar-compra/', views.finalizar_compra, name='finalizar_compra')
 ]   

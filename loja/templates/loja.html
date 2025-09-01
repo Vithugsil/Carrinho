@@ -1,88 +1,40 @@
 {% extends 'base.html' %}
 
+{% block title %}
+    Nossos Produtos - Loja
+{% endblock %}
+
 {% block body %}
-<!-- Container com fundo cinza -->
-<div class="bg-light min-vh-100 py-4">
-    <div class="container">
-        <h1 class="mb-4 text-center text-dark">Nossos Produtos</h1>
-        
-        {% if latest_product_list %}
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            {% for product in latest_product_list %}
+<div class="container mt-4">
+    <h1 class="mb-4 text-center">Nossos Produtos</h1>
+    
+    {% if latest_product_list %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for product in latest_product_list %}
             <div class="col">
-                <div class="card h-100 shadow-sm border-0">
-                    <!-- Imagem do produto (caso você tenha) -->
-                    {% if product.imagem %}
-                    <img src="{{ product.imagem.url }}" class="card-img-top" alt="{{ product.nome }}" style="height: 200px; object-fit: cover;">
-                    {% else %}
-                    <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
-                        <i class="fas fa-image text-white fa-3x"></i>
-                    </div>
-                    {% endif %}
-                    
+                <div class="card h-100 shadow-sm">
                     <div class="card-body d-flex flex-column">
-                        <h5 class="card-title text-dark mb-3">{{ product.nome }}</h5>
-                        
-                        <!-- Categoria -->
-                        {% if product.categoria %}
-                        <span class="badge bg-primary mb-2 align-self-start">{{ product.categoria }}</span>
-                        {% endif %}
-                        
-                        <!-- Descrição -->
-                        {% if product.descricao %}
-                        <p class="card-text text-muted flex-grow-1">{{ product.descricao|truncatechars:100 }}</p>
-                        {% endif %}
-                        
-                        <!-- Preço e botão -->
+                        <span class="badge bg-secondary mb-2 align-self-start">{{ product.categoria }}</span>
+                        <h2 class="card-title">{{ product.nome }}</h2>
+                        <p class="card-text text-success fw-bold fs-5">R$ {{ product.preco }}</p>
                         <div class="mt-auto">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="fs-4 fw-bold text-success">R$ {{ product.preco }}</span>
-                                <button class="btn btn-primary btn-sm">
-                                    <i class="fas fa-shopping-cart me-1"></i>
-                                    Comprar
+                            <form method="post" action="{% url 'adicionar_carrinho' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    Adicionar ao Carrinho
                                 </button>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <div class="text-center mt-5">
-            <div class="card mx-auto" style="max-width: 400px;">
-                <div class="card-body py-5">
-                    <i class="fas fa-box-open text-muted fa-4x mb-3"></i>
-                    <h5 class="card-title text-muted">Nenhum produto disponível</h5>
-                    <p class="card-text text-muted">Volte em breve para ver nossos produtos!</p>
-                </div>
-            </div>
-        </div>
-        {% endif %}
+        {% endfor %}
     </div>
+    {% else %}
+    <div class="text-center mt-5">
+        <p class="lead text-muted">Nenhum produto disponível no momento.</p>
+    </div>
+    {% endif %}
 </div>
-
-<!-- CSS adicional para melhorar o visual -->
-<style>
-    .card {
-        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    }
-    
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
-    }
-    
-    .bg-light {
-        background-color: #f8f9fa !important;
-    }
-    
-    .btn-primary {
-        transition: all 0.2s ease-in-out;
-    }
-    
-    .btn-primary:hover {
-        transform: scale(1.05);
-    }
-</style>
 {% endblock %}

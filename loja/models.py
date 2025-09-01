@@ -17,3 +17,7 @@ class Produto(models.Model):
     
     def __str__(self):
         return self.nome
+
+class Carrinho(models.Model):
+    Produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
+    quantidade = models.IntegerField(default=1)
