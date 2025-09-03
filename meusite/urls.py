@@ -20,8 +20,7 @@ from django.http import HttpResponse
 from loja.views import *
 
 def index(request):
-    print('')
-    return HttpResponse("ola mundo !")
+    return redirect('/loja/')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
