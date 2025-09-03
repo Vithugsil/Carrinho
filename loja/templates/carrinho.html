@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Carrinho de Compras - Loja
+{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="mb-4 text-center">Carrinho de Compras</h1>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+    
+    {% if carrinho_items %}
+    <div class="row">
+        <div class="col-lg-8">
+            {% for item in carrinho_items %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-7">
+                            <span class="badge bg-secondary mb-2"> Categoria do produto: {{ item.Produto.Categoria.nome }}</span>
+                            <h5 class="card-title mb-1">{{ item.Produto.nome }}</h5>
+                            <p class="text-success fw-bold mb-0">R$ {{ item.Produto.preco }}</p>
+                        </div>
+                        <div class="col-md-5 text-end">
+                            <div class="quantity-controls mb-2">
+                                <form method="post" action="/loja/diminuir-quantidade/">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="item_id" value="{{ item.Produto.id }}">
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm">-</button>
+                                </form>
+                                
+                                <span class="quantity-number">{{ item.quantidade }}</span>
+                                
+                                <form method="post" action="{% url 'aumentar_quantidade' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="item_id" value="{{ item.Produto.id }}">
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm">+</button>
+                                </form>
+                                
+                                <form method="post" action="{% url 'remover_item' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="item_id" value="{{ item.Produto.id }}">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">🗑️</button>
+                                </form>
+                            </div>
+                            <div>
+                                <small class="text-muted">Subtotal: </small>
+                                <strong>R$ {{ item.subtotal }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Resumo do Pedido</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Total:</strong>
+                        <strong class="text-success fs-4">R$ {{ preco_total }}</strong>
+                    </div>
+                    
+                    <form method="post" action="/loja/finalizar-compra/">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success w-100 mb-2">
+                            Finalizar Compra
+                        </button>
+                    </form>
+                    
+                    <a href="/loja/" class="btn btn-outline-primary w-100">
+                        Continuar Comprando
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% else %}
+    <div class="text-center mt-5">
+        <div class="mb-4">
+            <i class="display-1 text-muted">🛒</i>
+        </div>
+        <h3 class="text-muted mb-3">Seu carrinho está vazio</h3>
+        <p class="text-muted mb-4">Que tal adicionar alguns produtos incríveis?</p>
+        <a href="/loja/" class="btn btn-primary btn-lg">
+            Ver Produtos
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
