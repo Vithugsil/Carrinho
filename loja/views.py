@@ -1,8 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 
-# Create your views here.
-
 def loja(request):
     latest_product_list = Produto.objects.all()
     
@@ -20,7 +18,9 @@ def carrinho(request):
 
     for item in carrinho_items:
         item.subtotal = item.Produto.preco * item.quantidade
+        Carrinho.objects.filter(id=item.id).update(subtotal=item.subtotal)
         preco_total += item.subtotal
+        item.save()
 
     context = {
         "carrinho_items": carrinho_items,
@@ -47,18 +47,21 @@ def aumentar_quantidade(request):
     if request.method == 'POST':
         item_id = int(request.POST.get('item_id'))
         
-        carrinho_item = get_object_or_404(Carrinho, id=item_id)
+        produto = get_object_or_404(Produto, id=item_id)
+        carrinho_item = get_object_or_404(Carrinho, Produto=produto)
+        
         carrinho_item.quantidade += 1
         carrinho_item.save()
         
-        print(f"Quantidade do item {item_id} aumentada.")
+        print(f"Quantidade do produto {item_id} aumentada.")
         return redirect('/loja/carrinho/')
 
 def diminuir_quantidade(request):
     if request.method == 'POST':
         item_id = int(request.POST.get('item_id'))
 
-        carrinho_item = get_object_or_404(Carrinho, id=item_id)
+        produto = get_object_or_404(Produto, id=item_id)
+        carrinho_item = get_object_or_404(Carrinho, Produto=produto)
         
         if carrinho_item.quantidade > 1:
             carrinho_item.quantidade -= 1
@@ -66,7 +69,7 @@ def diminuir_quantidade(request):
         else:
             carrinho_item.delete()
 
-        print(f"Quantidade do item {item_id} diminuída.")
+        print(f"Quantidade do produto {item_id} diminuída.")
         return redirect('/loja/carrinho/')
 
 def remover_item(request):
@@ -86,13 +89,6 @@ def finalizar_compra(request):
         carrinho_items = Carrinho.objects.all()
         
         if carrinho_items.exists():
-            # Aqui você implementaria a lógica de finalização:
-            # - Criar pedido
-            # - Processar pagamento
-            # - Limpar carrinho
-            # - Enviar email de confirmação
-            
-            # Por enquanto, apenas limpa o carrinho:
             carrinho_items.delete()
             
             context = {

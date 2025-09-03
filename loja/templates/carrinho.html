@@ -8,10 +8,18 @@
 <div class="container mt-4">
     <h1 class="mb-4 text-center">Carrinho de Compras</h1>
     
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+    
     {% if carrinho_items %}
     <div class="row">
         <div class="col-lg-8">
-            <!-- Lista de itens do carrinho -->
             {% for item in carrinho_items %}
             <div class="card mb-3">
                 <div class="card-body">
@@ -22,35 +30,30 @@
                             <p class="text-success fw-bold mb-0">R$ {{ item.Produto.preco }}</p>
                         </div>
                         <div class="col-md-5 text-end">
-                            <div class="d-flex align-items-center justify-content-end mb-2">
-                                <!-- Controles de quantidade -->
-                                <form method="post" action="/loja/diminuir-quantidade/" class="d-inline">
+                            <div class="quantity-controls mb-2">
+                                <form method="post" action="/loja/diminuir-quantidade/">
                                     {% csrf_token %}
                                     <input type="hidden" name="item_id" value="{{ item.Produto.id }}">
                                     <button type="submit" class="btn btn-outline-secondary btn-sm">-</button>
                                 </form>
                                 
-                                <span class="mx-3 fw-bold">{{ item.quantidade }}</span>
+                                <span class="quantity-number">{{ item.quantidade }}</span>
                                 
-                                <form method="post" action="/loja/aumentar-quantidade/" class="d-inline">
+                                <form method="post" action="{% url 'aumentar_quantidade' %}">
                                     {% csrf_token %}
                                     <input type="hidden" name="item_id" value="{{ item.Produto.id }}">
                                     <button type="submit" class="btn btn-outline-secondary btn-sm">+</button>
                                 </form>
                                 
-                                <!-- Botão remover -->
-                                <form method="post" action="{% url 'remover_item' %}" class="d-inline ms-3">
+                                <form method="post" action="{% url 'remover_item' %}">
                                     {% csrf_token %}
                                     <input type="hidden" name="item_id" value="{{ item.Produto.id }}">
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">
-                                        🗑️
-                                    </button>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">🗑️</button>
                                 </form>
                             </div>
-                            <!-- Subtotal do item -->
                             <div>
                                 <small class="text-muted">Subtotal: </small>
-                                <strong>R$ {% widthratio item.Produto.preco 1 item.quantidade %}</strong>
+                                <strong>R$ {{ item.subtotal }}</strong>
                             </div>
                         </div>
                     </div>
@@ -59,7 +62,6 @@
             {% endfor %}
         </div>
         
-        <!-- Resumo do carrinho -->
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-header">
@@ -87,7 +89,6 @@
     </div>
     
     {% else %}
-    <!-- Carrinho vazio -->
     <div class="text-center mt-5">
         <div class="mb-4">
             <i class="display-1 text-muted">🛒</i>

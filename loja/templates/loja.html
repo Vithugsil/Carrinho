@@ -30,6 +30,9 @@
                 </div>
             </div>
         {% endfor %}
+        <a href="{% url 'carrinho' %}" class="btn btn-success btn-lg position-fixed" style="bottom: 20px; right: 20px; z-index: 1000;">
+            🛒 Ver Carrinho
+        </a>
     </div>
     {% else %}
     <div class="text-center mt-5">
